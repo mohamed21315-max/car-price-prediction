@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Car Price Predictor</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #10B981;
+      --primary-dark: #059669;
+      --text: #F3F4F6;
+      --text-light: #9CA3AF;
+      --bg: #111827;
+      --card-bg: #1F2937;
+      --section-bg: rgba(31, 41, 55, 0.8);
+      --nav-bg: rgba(16, 24, 39, 0.95);
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background: var(--bg) url('https://images.unsplash.com/photo-1485291571150-772bcfc10da5?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=80') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--text);
+      min-height: 100vh;
+      padding-top: 70px;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: -1;
+    }
+
+    /* Improved Navigation Bar - All items on left */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: var(--nav-bg);
+      backdrop-filter: blur(12px);
+      padding: 12px 5%;
+      display: flex;
+      align-items: center;
+      z-index: 1000;
+      box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2);
+      border-bottom: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .nav-container {
+      display: flex;
+      align-items: center;
+      gap: 40px;
+      width: 100%;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--primary);
+      font-size: 22px;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .logo:hover {
+      transform: translateY(-2px);
+    }
+
+    .logo-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      background: rgba(16, 185, 129, 0.15);
+      border-radius: 10px;
+      font-size: 18px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 25px;
+    }
+
+    .nav-links a {
+      color: var(--text-light);
+      text-decoration: none;
+      font-weight: 500;
+      font-size: 15px;
+      transition: all 0.3s ease;
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary);
+      background: rgba(16, 185, 129, 0.1);
+    }
+
+    .nav-links a.active {
+      color: var(--primary);
+      background: rgba(16, 185, 129, 0.2);
+    }
+
+    .nav-links a.active::after {
+      content: '';
+      position: absolute;
+      bottom: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60%;
+      height: 3px;
+      background: var(--primary);
+      border-radius: 3px;
+    }
+
+    .nav-links i {
+      font-size: 16px;
+    }
+
+    .container {
+      background: var(--section-bg);
+      backdrop-filter: blur(10px);
+      padding: 50px;
+      max-width: 1000px;
+      width: 90%;
+      margin: 40px auto;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    h1 {
+      text-align: center;
+      color: var(--primary);
+      margin-bottom: 50px;
+      font-size: 36px;
+      font-weight: 700;
+      position: relative;
+    }
+
+    h1:after {
+      content: '';
+      position: absolute;
+      bottom: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80px;
+      height: 4px;
+      background: linear-gradient(to right, var(--primary), var(--primary-dark));
+      border-radius: 2px;
+    }
+
+    .process-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 30px;
+      padding: 30px;
+      border-radius: 16px;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .step:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(16, 185, 129, 0.2);
+      border-color: var(--primary);
+    }
+
+    .step-number {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 600;
+      flex-shrink: 0;
+      box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+    }
+
+    .step-content {
+      flex: 1;
+    }
+
+    .step h3 {
+      margin: 0 0 15px;
+      color: var(--primary);
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .step p {
+      margin: 0;
+      color: var(--text-light);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+
+    .features {
+      margin-top: 50px;
+      background: rgba(16, 185, 129, 0.08);
+      border-radius: 16px;
+      padding: 30px;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .features::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&q=10') no-repeat center center;
+      background-size: cover;
+      opacity: 0.1;
+      z-index: -1;
+    }
+
+    .features h2 {
+      color: var(--primary);
+      margin-top: 0;
+      margin-bottom: 25px;
+      font-size: 24px;
+    }
+
+    .feature-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .feature-item {
+      display: flex;
+      gap: 15px;
+      padding: 15px;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      background: rgba(31, 41, 55, 0.6);
+    }
+
+    .feature-item:hover {
+      background: rgba(16, 185, 129, 0.15);
+      transform: translateY(-3px);
+    }
+
+    .feature-icon {
+      color: var(--primary);
+      font-size: 20px;
+      margin-top: 3px;
+    }
+
+    .feature-text {
+      flex: 1;
+    }
+
+    .feature-text h4 {
+      margin: 0 0 8px;
+      color: var(--text);
+      font-size: 18px;
+    }
+
+    .feature-text p {
+      margin: 0;
+      color: var(--text-light);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 992px) {
+      .navbar {
+        padding: 12px 30px;
+      }
+
+      .nav-container {
+        gap: 30px;
+      }
+
+      .nav-links {
+        gap: 15px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 40px 30px;
+        width: 95%;
+      }
+
+      h1 {
+        font-size: 30px;
+      }
+
+      .step {
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .step-number {
+        width: 50px;
+        height: 50px;
+        font-size: 20px;
+      }
+
+      .navbar {
+        padding: 12px 20px;
+      }
+
+      .nav-container {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+      }
+
+      .nav-links {
+        width: 100%;
+        justify-content: space-between;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        padding: 30px 20px;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+
+      .step {
+        padding: 25px 20px;
+      }
+
+      .feature-list {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-links a {
+        font-size: 14px;
+        padding: 6px 8px;
+      }
+
+      .logo {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Navigation Bar - All items on left side -->
+  <nav class="navbar">
+    <div class="nav-container">
+      <a href="#" class="logo">
+        <div class="logo-icon">
+          <i class="fas fa-chart-line"></i>
+        </div>
+        <span>Car Price Predictor</span>
+      </a>
+
+      <div class="nav-links">
+        <a href="#" class="active"><i class="fas fa-home"></i> Home</a>
+        <a href="#"><i class="fas fa-calculator"></i> Prediction</a>
+        <a href="#"><i class="fas fa-cogs"></i> How It Works</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <div class="container">
+    <h1>How Our Car Price Prediction Works</h1>
+
+    <div class="process-steps">
+      <div class="step">
+        <div class="step-number">1</div>
+        <div class="step-content">
+          <h3>Vehicle Information Input</h3>
+          <p>Enter comprehensive details about your vehicle including manufacturer, model year, mileage, engine specifications, and additional features. Our intuitive form guides you through all necessary information for an accurate valuation.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">2</div>
+        <div class="step-content">
+          <h3>Advanced Data Analysis</h3>
+          <p>Our system processes your input through multiple validation layers and transforms the data into machine-readable format using sophisticated feature engineering techniques and categorical encoding.</p>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-number">3</div>
+        <div class="step-content">
+          <h3>AI-Powered Price Estimation</h3>
+          <p>Our trained machine learning model evaluates your vehicle's specifications against current market trends, historical sales data, and regional pricing factors to generate a precise market value estimate.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="features">
+      <h2>Key Features of Our System</h2>
+      <div class="feature-list">
+        <div class="feature-item">
+          <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+          <div class="feature-text">
+            <h4>Instant Results</h4>
+            <p>Receive your valuation in seconds with our optimized prediction pipeline.</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+          <div class="feature-text">
+            <h4>Market-Based Pricing</h4>
+            <p>Our algorithms continuously update with the latest market data for accurate valuations.</p>
+          </div>
+        </div>
+        <div class="feature-item">
+          <div class="feature-icon"><i class="fas fa-cogs"></i></div>
+          <div class="feature-text">
+            <h4>Comprehensive Analysis</h4>
+            <p>We evaluate over  vehicle attributes to determine the optimal price point.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

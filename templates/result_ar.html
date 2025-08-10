@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>نتيجة التنبؤ</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(to left, #dbeafe, #e0f2fe);
+            padding: 40px;
+            margin: 0;
+        }
+
+        .container {
+            background: white;
+            max-width: 750px;
+            margin: auto;
+            padding: 35px 40px;
+            border-radius: 16px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-right: 10px solid #3b82f6;
+        }
+
+        h2 {
+            text-align: center;
+            color: #1e3a8a;
+            margin-bottom: 30px;
+        }
+
+        .logo {
+            display: block;
+            margin: auto;
+            width: 120px;
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        td {
+            padding: 12px 8px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        td:first-child {
+            font-weight: bold;
+            color: #374151;
+            width: 40%;
+        }
+
+        .result {
+            background-color: #ecfdf5;
+            color: #065f46;
+            border: 1px solid #34d399;
+            padding: 20px;
+            text-align: center;
+            margin-top: 30px;
+            font-size: 24px;
+            font-weight: bold;
+            border-radius: 12px;
+        }
+
+        a {
+            display: block;
+            text-align: center;
+            margin-top: 25px;
+            color: #1d4ed8;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <img src="/static/logos/{{ form_data['Manufacturer'] | upper }}.png" alt="شعار السيارة" class="logo">
+    <h2>نتيجة التنبؤ</h2>
+
+    <table>
+        <tr><td>الشركة المصنعة</td><td>{{ form_data['Manufacturer'] }}</td></tr>
+        <tr><td>الموديل</td><td>{{ form_data['Model'] }}</td></tr>
+        <tr><td>سنة الصنع</td><td>{{ form_data['Prod_year'] }}</td></tr>
+        <tr><td>الفئة</td><td>{{ form_data['Category'] }}</td></tr>
+        <tr><td>نوع الوقود</td><td>{{ form_data['Fuel type'] }}</td></tr>
+        <tr><td>سعة المحرك</td><td>{{ form_data['Engine volume'] }}</td></tr>
+        <tr><td>المسافة المقطوعة</td><td>{{ form_data['Mileage'] }} كم</td></tr>
+        <tr><td>عدد الأسطوانات</td><td>{{ form_data['Cylinders'] }}</td></tr>
+        <tr><td>الجلد الداخلي</td><td>{{ form_data['Leather interior'] }}</td></tr>
+        <tr><td>نوع ناقل الحركة</td><td>{{ form_data['Gear box type'] }}</td></tr>
+        <tr><td>نوع الدفع</td><td>{{ form_data['Drive wheels'] }}</td></tr>
+        <tr><td>عجلة القيادة</td><td>{{ form_data['Wheel'] }}</td></tr>
+        <tr><td>اللون</td><td>{{ form_data['Color'] }}</td></tr>
+        <tr><td>عدد الوسائد الهوائية</td><td>{{ form_data['Airbags'] }}</td></tr>
+        <tr><td>الضريبة</td><td>{{ form_data['Levy'] }} $</td></tr>
+    </table>
+
+    <div class="result">
+        ✅ السعر المتوقع: {{ prediction }} $
+    </div>
+
+    <a href="/ar">← العودة إلى النموذج</a>
+</div>
+</body>
+</html>

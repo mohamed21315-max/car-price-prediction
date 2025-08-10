@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>توقع سعر السيارة</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            margin: 0;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            color: #fff;
+            opacity: 1;
+            transition: background-image 1s ease-in-out, opacity 1s ease-in-out;
+        }
+        .fade-out {
+            opacity: 0;
+        }
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+        h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #00e6c3;
+        }
+        .switch-lang {
+            text-align: left;
+            margin-bottom: 10px;
+        }
+        .switch-lang a {
+            color: #00e6c3;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: #f0f0f0;
+        }
+        select, input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: none;
+            background: #f8f9fa;
+            color: #111;
+            font-size: 0.95rem;
+        }
+        select:focus, input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 230, 195, 0.5);
+        }
+        button {
+            background-color: #00e6c3;
+            color: #000;
+            font-weight: bold;
+            padding: 14px 20px;
+            font-size: 1.1rem;
+            border: none;
+            border-radius: 10px;
+            margin-top: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #00c9ab;
+            transform: translateY(-2px);
+        }
+        .logo {
+            display: block;
+            height: 70px;
+            margin: 10px auto 20px;
+        }
+        .result {
+            margin-top: 30px;
+            background-color: rgba(16, 185, 129, 0.15);
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 1.3rem;
+            text-align: center;
+            color: #00ffae;
+            border: 1px solid #00ffae;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="switch-lang">
+            <a href="/predict"><i class="fas fa-language"></i> English</a>
+        </div>
+
+        <h2><i class="fas fa-car-side"></i> نظام توقع أسعار السيارات</h2>
+
+        <form method="post">
+            <div class="form-grid">
+                <div>
+                    <label for="manufacturer">الشركة المصنعة:</label>
+                    <select name="manufacturer" id="manufacturer" required onchange="updateModels()">
+                        <option disabled selected>اختر الشركة</option>
+                        {% for manu in manufacturers %}
+                            <option value="{{ manu }}">{{ manu }}</option>
+                        {% endfor %}
+                    </select>
+                    <img id="manufacturerLogo" class="logo" src="" style="display: none;" alt="شعار الشركة">
+                </div>
+
+                <div>
+                    <label for="model">الموديل:</label>
+                    <select name="model" id="model" required>
+                        <option disabled selected>اختر الموديل</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="prod_year">سنة الصنع:</label>
+                    <select name="prod_year" required>
+                        {% for year in years %}
+                            <option value="{{ year }}">{{ year }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label for="category">الفئة:</label>
+                    <select name="category" required>
+                        <option>Jeep</option>
+                        <option>Hatchback</option>
+                        <option>Sedan</option>
+                        <option>Microbus</option>
+                        <option>Goods wagon</option>
+                        <option>Universal</option>
+                        <option>Coupe</option>
+                        <option>Minivan</option>
+                        <option>Cabriolet</option>
+                        <option>Limousine</option>
+                        <option>Pickup</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="fuel">نوع الوقود:</label>
+                    <select name="fuel" required>
+                        <option>بنزين</option>
+                        <option>ديزل</option>
+                        <option>هايبرد</option>
+                        <option>كهرباء</option>
+                        <option>هايبرد قابلة للشحن</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="levy">الضريبة:</label>
+                    <input type="number" name="levy" step="0.01" required>
+                </div>
+
+                <div>
+                    <label for="engine">سعة المحرك:</label>
+                    <input type="number" name="engine" step="0.1" required>
+                </div>
+
+                <div>
+                    <label for="mileage">عدد الكيلومترات:</label>
+                    <input type="number" name="mileage" required>
+                </div>
+
+                <div>
+                    <label for="cylinders">عدد الأسطوانات:</label>
+                    <select name="cylinders" required>
+                        {% for c in [1,2,3,4,5,6,7,8,9,10,12,14,16] %}
+                            <option value="{{ c }}">{{ c }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label for="leather">داخلية جلدية:</label>
+                    <select name="leather" required>
+                        <option value="Yes">نعم</option>
+                        <option value="No">لا</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="gear">نوع ناقل الحركة:</label>
+                    <select name="gear" required>
+                        <option>أوتوماتيك</option>
+                        <option>عادي</option>
+                        <option>تيبترونيك</option>
+                        <option>متغير</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="drive">نوع الدفع:</label>
+                    <select name="drive" required>
+                        <option>أمامي</option>
+                        <option>خلفي</option>
+                        <option>رباعي</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="wheel">عجلة القيادة:</label>
+                    <select name="wheel" required>
+                        <option>يسار</option>
+                        <option>يمين</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="color">اللون:</label>
+                    <select name="color" required>
+                        <option>فضي</option>
+                        <option>أسود</option>
+                        <option>أبيض</option>
+                        <option>رمادي</option>
+                        <option>أزرق</option>
+                        <option>أخضر</option>
+                        <option>أحمر</option>
+                        <option>أزرق سماوي</option>
+                        <option>برتقالي</option>
+                        <option>أصفر</option>
+                        <option>بني</option>
+                        <option>ذهبي</option>
+                        <option>بيج</option>
+                        <option>أحمر قرمزي</option>
+                        <option>بنفسجي</option>
+                        <option>وردي</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="airbags">عدد الوسائد الهوائية:</label>
+                    <input type="number" name="airbags" required>
+                </div>
+            </div>
+
+            <button type="submit"><i class="fas fa-calculator"></i> توقع السعر</button>
+        </form>
+
+        {% if prediction %}
+            <div class="result">✅ السعر المتوقع: {{ prediction | round(2) }} $</div>
+        {% endif %}
+    </div>
+
+    <script>
+        const manufacturerModels = {{ manufacturer_models | tojson }};
+        const logoBasePath = "/static/logos/";
+
+        function updateModels() {
+            const manuSelect = document.getElementById("manufacturer");
+            const modelSelect = document.getElementById("model");
+            const logo = document.getElementById("manufacturerLogo");
+
+            const selected = manuSelect.value;
+            const models = manufacturerModels[selected] || [];
+
+            modelSelect.innerHTML = '<option disabled selected>اختر الموديل</option>';
+            models.forEach(m => {
+                const opt = document.createElement("option");
+                opt.value = m;
+                opt.textContent = m;
+                modelSelect.appendChild(opt);
+            });
+
+            logo.src = logoBasePath + selected.toUpperCase() + ".png";
+            logo.style.display = "block";
+        }
+
+        // تغيير خلفية الصفحة بصور عشوائية مع تأثير تلاشي
+        const carImages = [
+            "/static/cars/car1.jpg",
+            "/static/cars/car2.jpg",
+            "/static/cars/car3.jpg",
+            "/static/cars/car4.jpg",
+            "/static/cars/car5.jpg"
+        ];
+
+        let lastIndex = -1;
+
+        function changeBackground() {
+            let randomIndex;
+            do {
+                randomIndex = Math.floor(Math.random() * carImages.length);
+            } while (randomIndex === lastIndex);
+
+            document.body.classList.add("fade-out");
+
+            setTimeout(() => {
+                document.body.style.backgroundImage = `url('${carImages[randomIndex]}')`;
+                lastIndex = randomIndex;
+                document.body.classList.remove("fade-out");
+            }, 1000);
+        }
+
+        window.onload = () => {
+            const manu = document.getElementById("manufacturer");
+            if (manu.value) updateModels();
+            changeBackground();
+            setInterval(changeBackground, 7000);
+        };
+    </script>
+</body>
+</html>

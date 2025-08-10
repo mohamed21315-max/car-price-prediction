@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Car Price Prediction</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2ecc71; /* Lighter green */
+      --primary-light: #48d68f; /* Brighter light green */
+      --secondary: #27ae60; /* Softer dark green */
+      --accent: #76e8b7; /* Lighter accent color */
+      --dark: #1a1a2e; /* Lighter dark background */
+      --darker: #0d0d1a; /* Slightly lighter */
+      --light: #f8f9fa; /* Brighter text */
+      --success: #2ecc71; /* Matching primary */
+      --warning: #f39c12; /* Softer orange */
+      --danger: #e74c3c; /* Softer red */
+      --gray: #95a5a6; /* Lighter gray */
+      --card-bg: rgba(26, 32, 44, 0.8); /* More transparent */
+      --card-border: rgba(46, 204, 113, 0.2); /* More subtle border */
+      --nav-bg: rgba(26, 32, 44, 0.9); /* More transparent */
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background: url('https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2000&q=80') no-repeat center center fixed;
+      background-size: cover;
+      color: var(--light);
+      min-height: 100vh;
+      line-height: 1.6;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5); /* Lighter overlay */
+      z-index: -1;
+    }
+
+    /* NAVBAR */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 70px;
+      background: var(--nav-bg);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0 40px;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2); /* Lighter shadow */
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .logo-title {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--primary-light);
+      text-decoration: none;
+    }
+
+    .logo-title i {
+      font-size: 26px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 25px;
+    }
+
+    .nav-links a {
+      color: var(--light);
+      text-decoration: none;
+      font-size: 16px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-links a:hover {
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .nav-links a.active {
+      color: var(--accent);
+      border-bottom: 2px solid var(--accent);
+    }
+
+    .nav-links a i {
+      font-size: 18px;
+    }
+
+    /* PAGE CONTENT */
+    .page {
+      display: none;
+      padding-top: 90px;
+      min-height: calc(100vh - 70px);
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    /* PREDICTION FORM STYLES */
+    .container {
+      max-width: 1100px;
+      margin: 0 auto 40px;
+      background: var(--card-bg);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2); /* Lighter shadow */
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--card-border);
+    }
+
+    h2 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: var(--accent);
+      font-size: 28px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    h2 i {
+      font-size: 32px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 25px;
+    }
+
+    .form-group {
+      margin-bottom: 5px;
+    }
+
+    label {
+      font-weight: 500;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--light);
+      font-size: 15px;
+    }
+
+    label i {
+      color: var(--accent);
+      font-size: 18px;
+      width: 20px;
+      text-align: center;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.15); /* More subtle border */
+      background: rgba(0, 0, 0, 0.2); /* More transparent */
+      color: var(--light);
+      font-size: 15px;
+      font-family: 'Poppins', sans-serif;
+      transition: all 0.3s ease;
+      margin-top: 6px;
+    }
+
+    select:focus, input:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(118, 232, 183, 0.2); /* Lighter focus */
+      background: rgba(0, 0, 0, 0.3);
+    }
+
+    .answer {
+      font-size: 14px;
+      margin-top: 8px;
+      color: var(--accent);
+      font-weight: 500;
+      padding-left: 30px;
+    }
+
+    button {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: var(--light);
+      font-weight: 600;
+      padding: 16px 24px;
+      font-size: 17px;
+      border: none;
+      border-radius: 12px;
+      margin-top: 30px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 4px 15px rgba(46, 204, 113, 0.2); /* Lighter shadow */
+    }
+
+    button:hover {
+      background: linear-gradient(135deg, var(--primary-light), var(--primary));
+      transform: translateY(-3px);
+      box-shadow: 0 6px 20px rgba(46, 204, 113, 0.3); /* Lighter shadow */
+    }
+
+    button:active {
+      transform: translateY(1px);
+    }
+
+    .logo {
+      display: block;
+      height: 80px;
+      margin: 15px auto;
+      filter: drop-shadow(0 0 10px rgba(118, 232, 183, 0.4)); /* Lighter glow */
+      transition: all 0.3s ease;
+    }
+
+    .logo:hover {
+      transform: scale(1.05);
+    }
+
+    .result {
+      margin-top: 40px;
+      background: rgba(46, 204, 113, 0.15); /* More transparent */
+      padding: 25px;
+      border-radius: 15px;
+      font-size: 22px;
+      text-align: center;
+      color: var(--accent);
+      border: 1px solid var(--primary);
+      font-weight: 600;
+      animation: fadeIn 0.5s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+    }
+
+    .result i {
+      font-size: 28px;
+    }
+
+    /* HOW IT WORKS PAGE STYLES */
+    .how-it-works {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .process-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 30px;
+      margin-top: 40px;
+    }
+
+    .step {
+      display: flex;
+      align-items: flex-start;
+      gap: 30px;
+      padding: 30px;
+      border-radius: 16px;
+      background: rgba(46, 204, 113, 0.05); /* More transparent */
+      border: 1px solid rgba(46, 204, 113, 0.15); /* More subtle border */
+      transition: all 0.3s ease;
+    }
+
+    .step:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 20px rgba(46, 204, 113, 0.15); /* Lighter shadow */
+      border-color: var(--primary);
+    }
+
+    .step-number {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 600;
+      flex-shrink: 0;
+      box-shadow: 0 5px 15px rgba(46, 204, 113, 0.2); /* Lighter shadow */
+    }
+
+    .step-content {
+      flex: 1;
+    }
+
+    .step h3 {
+      margin: 0 0 15px;
+      color: var(--primary);
+      font-size: 22px;
+      font-weight: 600;
+    }
+
+    .step p {
+      margin: 0;
+      color: var(--light);
+      line-height: 1.7;
+      font-size: 16px;
+    }
+
+    .features {
+      margin-top: 50px;
+      background: rgba(46, 204, 113, 0.05); /* More transparent */
+      border-radius: 16px;
+      padding: 30px;
+      border: 1px solid rgba(46, 204, 113, 0.15); /* More subtle border */
+    }
+
+    .features h2 {
+      color: var(--primary);
+      margin-top: 0;
+      margin-bottom: 25px;
+      text-align: left;
+      justify-content: flex-start;
+    }
+
+    .feature-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .feature-item {
+      display: flex;
+      gap: 15px;
+      padding: 15px;
+      border-radius: 10px;
+      transition: all 0.3s ease;
+      background: rgba(31, 41, 55, 0.5); /* More transparent */
+    }
+
+    .feature-item:hover {
+      background: rgba(46, 204, 113, 0.1); /* More transparent */
+      transform: translateY(-3px);
+    }
+
+    .feature-icon {
+      color: var(--primary);
+      font-size: 20px;
+      margin-top: 3px;
+    }
+
+    .feature-text h4 {
+      margin: 0 0 8px;
+      color: var(--light);
+      font-size: 18px;
+    }
+
+    .feature-text p {
+      margin: 0;
+      color: var(--gray);
+      font-size: 15px;
+      line-height: 1.6;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsive Design */
+    @media (max-width: 992px) {
+      .container, .how-it-works {
+        margin: 0 20px 30px;
+        padding: 30px;
+      }
+
+      .form-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 20px;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 0 20px;
+        height: 60px;
+      }
+
+      .logo-title {
+        font-size: 18px;
+      }
+
+      .nav-links {
+        gap: 15px;
+      }
+
+      .nav-links a {
+        font-size: 14px;
+      }
+
+      h2 {
+        font-size: 24px;
+      }
+
+      select, input {
+        padding: 12px 14px;
+      }
+
+      button {
+        padding: 14px 20px;
+        font-size: 16px;
+      }
+
+      .result {
+        font-size: 20px;
+        padding: 20px;
+      }
+
+      .step {
+        flex-direction: column;
+        gap: 20px;
+        padding: 25px;
+      }
+    }
+
+    @media (max-width: 576px) {
+      .navbar {
+        flex-direction: column;
+        height: auto;
+        padding: 15px;
+      }
+
+      .logo-title {
+        margin-bottom: 10px;
+      }
+
+      .container, .how-it-works {
+        margin-top: 100px;
+        padding: 25px 20px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      h2 {
+        font-size: 22px;
+      }
+
+      .result {
+        font-size: 18px;
+        flex-direction: column;
+        gap: 10px;
+      }
+
+      .nav-links {
+        width: 100%;
+        justify-content: space-around;
+      }
+    }
+  </style>
+</head>
+<body>
+<nav class="navbar" style="display: flex; align-items: center; gap: 40px; padding: 0 40px;">
+  <div style="display: flex; align-items: center; gap: 30px;">
+    <div style="display: flex; align-items: center; gap: 8px; color: var(--primary-light); font-weight: 600; font-size: 20px;">
+      <i class="fas fa-car"></i>
+      <span>Car Price Predictor</span>
+    </div>
+
+    <div style="display: flex; gap: 20px;">
+      <a href="/" style="color: var(--light); text-decoration: none;"><i class="fas fa-house"></i> Home</a>
+      <a href="#" onclick="showPage('prediction')" style="color: var(--light); text-decoration: none;"><i class="fas fa-calculator"></i> Prediction</a>
+      <a href="#" onclick="showPage('info')">
+        <i class="fas fa-circle-info"></i>
+        <span>Info</span>
+      </a>
+    </div>
+  </div>
+  <body>
+  <!-- Background slideshow (rotates high-res car photos) -->
+  <div class="bg-slideshow" aria-hidden="true">
+    <div class="bg-slide active" style="background-image:url('https://images.unsplash.com/photo-1511919884226-fd3cad34687c?q=80&w=2000&auto=format&fit=crop');"></div>
+    <div class="bg-slide" style="background-image:url('https://images.unsplash.com/photo-1518893494013-481c1d8ed3fd?q=80&w=2000&auto=format&fit=crop');"></div>
+    <div class="bg-slide" style="background-image:url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2000&auto=format&fit=crop');"></div>
+    <div class="bg-slide" style="background-image:url('https://images.unsplash.com/photo-1544829728-e5cb9eed1618?q=80&w=2000&auto=format&fit=crop');"></div>
+  </div>
+</nav>
+
+
+  <div id="prediction-page" class="page active">
+    <div class="container">
+      <h2>
+        <i class="fas fa-calculator"></i>
+        <span>Car Price Prediction</span>
+      </h2>
+
+      <form method="post">
+        <div class="form-grid">
+
+          <div class="form-group">
+            <label for="manufacturer">
+              <i class="fas fa-industry"></i>
+              <span>Manufacturer</span>
+            </label>
+            <select name="manufacturer" id="manufacturer" required onchange="updateModels(); showAnswer(this)">
+              <option disabled selected>Select a manufacturer</option>
+              {% for manu in manufacturers %}
+                <option value="{{ manu }}">{{ manu }}</option>
+              {% endfor %}
+            </select>
+            <div class="answer" id="manufacturer_answer"></div>
+            <img id="manufacturerLogo" class="logo" src="" style="display: none;" alt="Brand Logo">
+          </div>
+
+          <div class="form-group">
+            <label for="model">
+              <i class="fas fa-car"></i>
+              <span>Model</span>
+            </label>
+            <select name="model" id="model" required onchange="showAnswer(this)">
+              <option disabled selected>Select a model</option>
+            </select>
+            <div class="answer" id="model_answer"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="prod_year">
+              <i class="fas fa-calendar"></i>
+              <span>Production Year</span>
+            </label>
+            <select name="prod_year" id="prod_year" required onchange="showAnswer(this)">
+              {% for year in years %}
+                <option value="{{ year }}">{{ year }}</option>
+              {% endfor %}
+            </select>
+            <div class="answer" id="prod_year_answer"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="category">
+              <i class="fas fa-list"></i>
+              <span>Category</span>
+            </label>
+            <select name="category" id="category" required onchange="showAnswer(this)">
+              <option>Jeep</option>
+              <option>Hatchback</option>
+              <option>Sedan</option>
+              <option>Microbus</option>
+              <option>Goods wagon</option>
+              <option>Universal</option>
+              <option>Coupe</option>
+              <option>Minivan</option>
+              <option>Cabriolet</option>
+              <option>Limousine</option>
+              <option>Pickup</option>
+            </select>
+            <div class="answer" id="category_answer"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="fuel">
+              <i class="fas fa-gas-pump"></i>
+              <span>Fuel Type</span>
+            </label>
+            <select name="fuel" id="fuel" required onchange="showAnswer(this)">
+              <option>Petrol</option>
+              <option>Diesel</option>
+              <option>Hybrid</option>
+              <option>Electric</option>
+              <option>Plug-in hybrid</option>
+               <option>CNG</option>
+            </select>
+            <div class="answer" id="fuel_answer"></div>
+          </div>
+
+
+          <div class="form-group">
+            <label for="engine">
+              <i class="fas fa-tachometer-alt"></i>
+              <span>Engine Volume</span>
+            </label>
+            <input type="number" name="engine" id="engine" step="0.1" required oninput="showAnswer(this)" placeholder="Enter engine volume">
+            <div class="answer" id="engine_answer"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="mileage">
+              <i class="fas fa-road"></i>
+              <span>Mileage (km)</span>
+            </label>
+            <input type="number" name="mileage" id="mileage" required oninput="showAnswer(this)" placeholder="Enter mileage">
+            <div class="answer" id="mileage_answer"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="cylinders">
+              <i class="fas fa-cogs"></i>
+              <span>Cylinders</span>
+            </label>
+            <select name="cylinders" id="cylinders" required onchange="showAnswer(this)">
+              {% for c in [1,2,3,4,5,6,7,8,9,10,12,14,16] %}
+                <option value="{{ c }}">{{ c }}</option>
+              {% endfor %}
+            </select>
+            <div class="answer" id="cylinders_answer"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="leather">
+              <i class="fas fa-couch"></i>
+              <span>Leather Interior</span>
+            </label>
+            <select name="leather" id="leather" required onchange="showAnswer(this)">
+              <option value="Yes">Yes</option>
+              <option value="No">No</option>
+            </select>
+            <div class="answer" id="leather_answer"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="gear">
+              <i class="fas fa-cog"></i>
+              <span>Gearbox Type</span>
+            </label>
+            <select name="gear" id="gear" required onchange="showAnswer(this)">
+              <option>Automatic</option>
+              <option>Manual</option>
+              <option>Tiptronic</option>
+              <option>Variator</option>
+            </select>
+            <div class="answer" id="gear_answer"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="drive">
+              <i class="fas fa-car-side"></i>
+              <span>Drive Wheels</span>
+            </label>
+            <select name="drive" id="drive" required onchange="showAnswer(this)">
+              <option>Front</option>
+              <option>Rear</option>
+              <option>4x4</option>
+            </select>
+            <div class="answer" id="drive_answer"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="wheel">
+              <i class="fas fa-circle"></i>
+              <span>Steering Wheel</span>
+            </label>
+            <select name="wheel" id="wheel" required onchange="showAnswer(this)">
+              <option>Left wheel</option>
+              <option>Right-hand drive</option>
+            </select>
+            <div class="answer" id="wheel_answer"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="color">
+              <i class="fas fa-palette"></i>
+              <span>Color</span>
+            </label>
+            <select name="color" id="color" required onchange="showAnswer(this)">
+              <option>Silver</option>
+              <option>Black</option>
+              <option>White</option>
+              <option>Grey</option>
+              <option>Blue</option>
+              <option>Green</option>
+              <option>Red</option>
+              <option>Sky blue</option>
+              <option>Orange</option>
+              <option>Yellow</option>
+              <option>Brown</option>
+              <option>Golden</option>
+              <option>Beige</option>
+              <option>Carnelian red</option>
+              <option>Purple</option>
+              <option>Pink</option>
+            </select>
+            <div class="answer" id="color_answer"></div>
+          </div>
+
+          <div class="form-group">
+            <label for="airbags">
+              <i class="fas fa-shield-alt"></i>
+              <span>Airbags</span>
+            </label>
+            <input type="number" name="airbags" id="airbags" required oninput="showAnswer(this)" placeholder="Number of airbags">
+            <div class="answer" id="airbags_answer"></div>
+          </div>
+
+        </div>
+
+        <button type="submit">
+          <i class="fas fa-calculator"></i>
+          <span>Predict Price</span>
+        </button>
+      </form>
+
+      {% if prediction %}
+      <div class="result">
+        <i class="fas fa-check-circle"></i>
+        <span>Predicted Price: {{ prediction | round(2) }} $</span>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <div id="info-page" class="page">
+    <div class="how-it-works">
+      <div class="container">
+        <h2>
+          <i class="fas fa-cogs"></i>
+          <span>How Our Car Price Prediction Works</span>
+        </h2>
+
+        <div class="process-steps">
+          <div class="step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h3>Vehicle Information Input</h3>
+              <p>Enter comprehensive details about your vehicle including manufacturer, model year, mileage, engine specifications, and additional features. Our intuitive form guides you through all necessary information for an accurate valuation.</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h3>Advanced Data Analysis</h3>
+              <p>Our system processes your input through multiple validation layers and transforms the data into machine-readable format using sophisticated feature engineering techniques and categorical encoding.</p>
+            </div>
+          </div>
+
+          <div class="step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h3>AI-Powered Price Estimation</h3>
+              <p>Our trained machine learning model evaluates your vehicle's specifications against current market trends, historical sales data, and regional pricing factors to generate a precise market value estimate.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="features">
+          <h2>
+            <i class="fas fa-star"></i>
+            <span>Key Features of Our System</span>
+          </h2>
+          <div class="feature-list">
+            <div class="feature-item">
+              <div class="feature-icon"><i class="fas fa-bolt"></i></div>
+              <div class="feature-text">
+                <h4>Instant Results</h4>
+                <p>Receive your valuation in seconds with our optimized prediction pipeline.</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+              <div class="feature-text">
+                <h4>Market-Based Pricing</h4>
+                <p>Our algorithms continuously update with the latest market data for accurate valuations.</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <div class="feature-icon"><i class="fas fa-cogs"></i></div>
+              <div class="feature-text">
+                <h4>Comprehensive Analysis</h4>
+                <p>We evaluate over 50 vehicle attributes to determine the optimal price point.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Page navigation
+    function showPage(pageId) {
+      // Hide all pages
+      document.querySelectorAll('.page').forEach(page => {
+        page.classList.remove('active');
+      });
+
+      // Show selected page
+      document.getElementById(pageId + '-page').classList.add('active');
+
+      // Update active nav link
+      document.querySelectorAll('.nav-links a').forEach(link => {
+        link.classList.remove('active');
+      });
+
+      // Update active nav link based on the pageId
+      if (pageId === 'prediction') {
+        document.querySelector('.nav-links a:nth-child(2)').classList.add('active');
+      } else if (pageId === 'info') {
+        document.querySelector('.nav-links a:nth-child(3)').classList.add('active');
+      } else if (pageId === 'home') {
+        document.querySelector('.nav-links a:nth-child(1)').classList.add('active');
+      }
+
+      // Scroll to top
+      window.scrollTo(0, 0);
+    }
+
+    // Form functionality
+    const manufacturerModels = {{ manufacturer_models | tojson }};
+    const logoBasePath = "/static/logos/";
+
+    function updateModels() {
+      const manuSelect = document.getElementById("manufacturer");
+      const modelSelect = document.getElementById("model");
+      const logo = document.getElementById("manufacturerLogo");
+
+      const selected = manuSelect.value;
+      const models = manufacturerModels[selected] || [];
+
+      modelSelect.innerHTML = '<option disabled selected>Select a model</option>';
+      models.forEach(m => {
+        const opt = document.createElement("option");
+        opt.value = m;
+        opt.textContent = m;
+        modelSelect.appendChild(opt);
+      });
+
+      logo.src = logoBasePath + selected.toUpperCase() + ".png";
+      logo.style.display = "block";
+    }
+
+    function showAnswer(element) {
+      const id = element.id;
+      const val = element.value;
+      const answerDiv = document.getElementById(id + "_answer");
+      if (answerDiv) {
+        answerDiv.innerText = "Selected: " + val;
+      }
+    }
+
+    // Initialize form animations
+    document.addEventListener('DOMContentLoaded', () => {
+      const formGroups = document.querySelectorAll('.form-group');
+      formGroups.forEach((group, index) => {
+        group.style.opacity = '0';
+        group.style.transform = 'translateY(20px)';
+        group.style.animation = `fadeInUp 0.5s ease forwards ${index * 0.05}s`;
+      });
+
+      // Add animation style
+      const style = document.createElement('style');
+      style.textContent = `
+        @keyframes fadeInUp {
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      `;
+      document.head.appendChild(style);
+
+      // Set the initial active page (Prediction page in this case)
+      showPage('prediction');
+    });
+  </script>
+</body>
+</html>

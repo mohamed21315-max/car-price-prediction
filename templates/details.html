@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prediction Details</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: #0b0f19;
+      color: #f0f0f0;
+      margin: 0;
+      padding: 30px;
+    }
+
+    h2 {
+      text-align: center;
+      color: #00ff88;
+      margin-bottom: 30px;
+    }
+
+    table {
+      margin: 0 auto 40px auto;
+      border-collapse: collapse;
+      width: 80%;
+      background-color: rgba(255, 255, 255, 0.05);
+      border: 1px solid #00ff88;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    th, td {
+      padding: 12px 20px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #00ff88;
+      color: #0b0f19;
+    }
+
+    td {
+      border-bottom: 1px solid #333;
+    }
+
+    canvas {
+      display: block;
+      margin: 0 auto;
+      max-width: 600px;
+      background: #1a1a1a;
+      padding: 15px;
+      border-radius: 15px;
+    }
+
+    .btn {
+      display: block;
+      margin: 40px auto 0 auto;
+      padding: 10px 20px;
+      background-color: #00ff88;
+      color: #0b0f19;
+      font-weight: bold;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      background-color: #00cc66;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Detailed Prediction Information</h2>
+
+  <table>
+    {% for key, value in form_data.items() %}
+    <tr>
+      <th>{{ key }}</th>
+      <td>{{ value }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <canvas id="priceChart" width="400" height="200"></canvas>
+
+  <script>
+    const ctx = document.getElementById('priceChart').getContext('2d');
+    new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Predicted', 'Market Avg', 'Highest', 'Lowest'],
+        datasets: [{
+          label: 'Price in USD',
+          data: [{{ predicted_price }}, {{ avg_price }}, {{ high_price }}, {{ low_price }}],
+          backgroundColor: ['#00ff88', '#888888', '#4444ff', '#ff4444']
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: false },
+          title: {
+            display: true,
+            text: 'Price Comparison',
+            color: '#ffffff',
+            font: {
+              size: 18
+            }
+          }
+        },
+        scales: {
+          y: {
+            ticks: { color: '#fff' },
+            beginAtZero: true
+          },
+          x: {
+            ticks: { color: '#fff' }
+          }
+        }
+      }
+    });
+  </script>
+
+  <a href="/" class="btn">Predict Another Car</a>
+
+</body>
+</html>
